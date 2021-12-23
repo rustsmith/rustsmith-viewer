@@ -1,3 +1,4 @@
+import argparse
 import os
 from pathlib import Path
 from typing import Dict, List
@@ -8,8 +9,8 @@ from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
-from pygments.lexers import RustLexer
 from pygments.lexers import BashLexer
+from pygments.lexers import RustLexer
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.staticfiles import StaticFiles
@@ -18,14 +19,13 @@ app = FastAPI()
 
 templates = Jinja2Templates(directory=pkg_resources.resource_filename("rustsmith_viewer", "templates/"))
 
-directory = "/Users/mayank/Documents/RustSmith/outRust"
-
 mapping = {"primary": "All correct", "secondary": "No results", "danger": "Compilation Error", "warning": "Bug found!!"}
 
 app.mount(
     "/static", StaticFiles(directory=pkg_resources.resource_filename("rustsmith_viewer", "static/")), name="static"
 )
 
+directory = ""
 
 @app.get("/")
 async def root():
@@ -105,7 +105,11 @@ async def read_item(request: Request, id: str):
 
 
 def main():
-    print(pkg_resources.resource_filename("rustsmith_viewer", "static/"))
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('directory', type=str, nargs="?", help='directory of rust files', default="outRust")
+    args = parser.parse_args()
+    global directory
+    directory = args.directory
     uvicorn.run(app)
 
 

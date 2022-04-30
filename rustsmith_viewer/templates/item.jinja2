@@ -1,149 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light"
+      style="background-image: radial-gradient(hsla(var(--bc)/.2) 0.5px,hsla(var(--b2)/1) 0.5px); background-size: 5px 5px;">
 <head>
     <meta charset="UTF-8">
-    <link href="/static/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/full.min.css"/>
+    <link rel="stylesheet" href="/static/tailwind.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+          integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <title>RustSmith - {{ id }}</title>
 </head>
 <body>
-<div class="container-flex">
-
-    <div class="row">
-        <div class="col-2" style="padding-right: 0; border-right: 1px solid rgb(223,223,223);">
-            <div style="height: 70px; border-bottom: 1px solid rgb(223,223,223);">
-                <h4 style="text-align: center; padding-top: 20px; padding-bottom: 20px">RustSmith Viewer</h4>
-            </div>
-            <div class="list-group">
-                {% for item in files %}
-                    <a id="{{ item }}" href="/file/{{ item }}"
-                       class="list-group-item {{ "list-group-item-primary" if item == id }}">{{ item }} <span
-                            style="float: right"
-                            class="badge rounded-pill bg-{{ summary[item] }}">{{ mapping[summary[item]] }}</span></a>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="col-10">
-            <div class="row">
-                <div style="height: 70px; border-bottom: 1px solid rgb(223,223,223)">
-                    <button type="button" class="btn btn-primary" style="margin-top: 15px; float: right; margin-right: 20px">
-                        &#9654;
-                        Run Validator
-                    </button>
-                </div>
-                <div class="row" style="padding-left: 20px; padding-top: 20px">
-                    <div class="col-6">
-                        <h2 style="width: 50%">{{ id }}.rs </h2>
-                    </div>
-                    <div class="col-2">
-                        <span style="float: right; margin-top: 10px"
-                              class="badge rounded-pill bg-{{ summary[id] }}">{{ mapping[summary[id]] }}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="row" style="padding: 20px">
-                <div class="col-8">
-                    <div class="row">
-                        <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
-                                        data-bs-target="#home"
-                                        type="button" role="tab" aria-controls="home" aria-selected="true">Source
-                                    File
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
-                                        data-bs-target="#profile"
-                                        type="button" role="tab" aria-controls="profile" aria-selected="false">
-                                    Abstract
-                                    Syntax Tree
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab"
-                                        data-bs-target="#contact"
-                                        type="button" role="tab" aria-controls="contact" aria-selected="false">
-                                    Compile Log
-                                </button>
-                            </li>
-                        </ul>
-                        <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                <div style="height: calc(100vh - 250px); overflow: scroll;">
-                                    {{ content|safe }}
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                <div id="ast-container" style="margin-top: 20px">
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-                                <div style="height: calc(100vh - 250px); overflow: scroll;">
-                                    {{ compile_log|safe }}
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="col-4">
-                    <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <div class="nav-link">Output</div>
-                        </li>
-                    </ul>
-                    <div>
-                        <div style="height: calc(100vh - 250px); overflow: scroll;">
-                            {{ output_log|safe }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <style>
     .list-group {
-        max-height: calc(100vh - 70px);
+        max-height: calc(100vh - 100px);
         border-radius: 0 !important;
         overflow: scroll;
         -webkit-overflow-scrolling: touch;
     }
 
     .source {
-        margin-top: 20px;
-        padding: 10px;
-    }
-
-    .vtree {
-        height: calc(100vh - 250px) !important;
-        width: 100%;
-        background: #f8f8f8;
+        border-radius: 10px;
+        padding: 10px
     }
 
     html, body {
         overscroll-behavior-y: none;
         overflow-y: hidden;
     }
-
 </style>
-<script src="/static/bootstrap.bundle.min.js"></script>
-<script src="/static/d3.v3.min.js" charset="utf-8"></script>
-<script src="/static/vtree.js"></script>
-<script type="text/javascript">
-    var vt;
+<div class="hero">
+    <div class="hero-content text-center">
+        <div class="max-w-xl" style="margin-top: 20px">
+            <h1 class="text-5xl font-bold">RustSmith Viewer</h1>
+            <p class="py-2">Web Interface to view files and results from generated rust files</p>
+        </div>
+    </div>
+</div>
+<div class="pr-5">
+    <div class="grid grid-cols-12">
+        <div class="col-span-2">
+            <ul class="menu rounded-box w-100 list-group p-2 py-0">
+                {% for item in files %}
+                    <li style="margin-bottom: 5px">
+                        <a id="{{ item }}" href="/file/{{ item }}" class="{{ "active menu-active" if item == id }}"
+                           style="display: block">
+                            {{ item }}
+                            <div style="float: right"
+                                 class="badge badge-{{ summary[item] }}">{{ mapping[summary[item]] }}</div>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
 
-    function updateTree() {
-        var container = document.getElementById("ast-container");
-        container.innerHTML = ""
-        vt = new VTree(container);
-        var reader = new VTree.reader.Object();
-        var data = reader.read({{ json_ast|safe }});
-
-        vt.data(data).update();
-    }
-
-    document.getElementById("profile-tab").onclick = updateTree;
-</script>
+        </div>
+        <div class="col-span-10">
+            <div class="grid grid-cols-12 gap-5">
+                <div class="col-span-8">
+                    <div class="flex w-full" style="margin-bottom: 20px">
+                        <button class="btn btn-primary btn-wide flex-grow">Source File</button>
+                        <div class="divider divider-horizontal"></div>
+                        <button class="btn btn-primary btn-wide btn-outline flex-grow" style="border: 0">Compile Log</button>
+                    </div>
+                    <div style="height: calc(100vh - 200px); overflow: scroll;">
+                        {{ content|safe }}
+                    </div>
+                </div>
+                <div class="col-span-4">
+                    <div class="flex w-full" style="margin-bottom: 20px">
+                        <button class="btn btn-link btn-wide flex-grow" style="cursor: default; text-decoration: none">Output Log</button>
+                    </div>
+                    <div>
+                        <div style="height: calc(100vh - 200px); overflow: scroll;">
+                            {{ output_log|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {#            <div class="row">#}
+        {#                <div style="height: 70px; border-bottom: 1px solid rgb(223,223,223)">#}
+        {#                    <a href="/stats" class="btn btn-primary" style="margin-top: 15px; float: right; margin-right: 20px">#}
+        {#                        View Statistics#}
+        {#                    </a>#}
+        {#                </div>#}
+        {#                <div class="row" style="padding-left: 20px; padding-top: 20px">#}
+        {#                    <div class="col-6">#}
+        {#                        <h2 style="width: 50%">{{ id }}.rs </h2>#}
+        {#                    </div>#}
+        {#                    <div class="col-2">#}
+        {#                        <span style="float: right; margin-top: 10px"#}
+        {#                              class="badge rounded-pill bg-{{ summary[id] }}">{{ mapping[summary[id]] }}</span>#}
+        {#                    </div>#}
+        {#                </div>#}
+        {#            </div>#}
+        {#            <div class="grid grid-cols-12" style="padding: 20px">#}
+        {#                <div class="columns-8">#}
+        {#                    <div class="grid grid-cols-12">#}
+        {#                        <div class="tabs tabs-boxed">#}
+        {#                            <a class="tab tab-active" id="home-tab" data-bs-toggle="tab"#}
+        {#                               data-bs-target="#home"#}
+        {#                               type="button" role="tab" aria-controls="home" aria-selected="true">Source#}
+        {#                                File#}
+        {#                            </a>#}
+        {#                            <a class="tab" role="presentation">#}
+        {#                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab"#}
+        {#                                        data-bs-target="#contact"#}
+        {#                                        type="button" role="tab" aria-controls="contact" aria-selected="false">#}
+        {#                                    Compile Log#}
+        {#                                </button>#}
+        {#                            </a>#}
+        {#                        </div>#}
+        {#                        <div class="tab-content" id="myTabContent">#}
+        {#                            <div class="tab-pane show active" id="home" role="tabpanel" aria-labelledby="home-tab">#}
+        {#                                <div style="height: calc(100vh - 250px); overflow: scroll;">#}
+        {#                                    {{ content|safe }}#}
+        {#                                </div>#}
+        {#                            </div>#}
+        {#                            <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">#}
+        {#                                <div id="ast-container" style="margin-top: 20px">#}
+        {#                                </div>#}
+        {#                            </div>#}
+        {#                            <div class="tab-pane" id="contact" role="tabpanel" aria-labelledby="contact-tab">#}
+        {#                                <div style="height: calc(100vh - 250px); overflow: scroll;">#}
+        {#                                    {{ compile_log|safe }}#}
+        {#                                </div>#}
+        {#                            </div>#}
+        {#                        </div>#}
+        {##}
+        {#                    </div>#}
+        {#                </div>#}
+        {#                <div class="columns-4">#}
+        {#                    <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">#}
+        {#                        <li class="nav-item" role="presentation">#}
+        {#                            <div class="nav-link">Output</div>#}
+        {#                        </li>#}
+        {#                    </ul>#}
+        {#                    <div>#}
+        {#                        <div style="height: calc(100vh - 250px); overflow: scroll;">#}
+        {#                            {{ output_log|safe }}#}
+        {#                        </div>#}
+        {#                    </div>#}
+        {#                </div>#}
+        {#            </div>#}
+        {#        </div>#}
+    </div>
+</div>
 </body>
 </html>

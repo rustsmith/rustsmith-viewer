@@ -19,13 +19,14 @@ app = FastAPI()
 
 templates = Jinja2Templates(directory=pkg_resources.resource_filename("rustsmith_viewer", "templates/"))
 
-mapping = {"primary": "All correct", "secondary": "No results", "danger": "Compilation Error", "warning": "Bug found!!"}
+mapping = {"primary": "All correct", "base-100": "No results", "danger": "Compilation Error", "warning": "Bug found!!"}
 
 app.mount(
     "/static", StaticFiles(directory=pkg_resources.resource_filename("rustsmith_viewer", "static/")), name="static"
 )
 
 directory = ""
+
 
 @app.get("/")
 async def root():
@@ -35,6 +36,22 @@ async def root():
         return RedirectResponse(f"/file/{files[0]}")
     else:
         return "No generated files"
+
+
+@app.get("/stats")
+async def stats(request: Request):
+    files: List[str] = os.listdir(directory)
+    x = list(map(lambda y: sum(1 for line in open(Path(directory) / y / f"{y}.rs")), files))
+    sizes = list(map(lambda x: os.path.getsize(Path(directory) / x / f"{x}.rs"), files))
+    return templates.TemplateResponse(
+        "stats.jinja2",
+        {
+            "request": request,
+            "line_length_plot": x,
+            "average_size": "{:.1f}".format((sum(sizes) / len(sizes)) / 1024),
+            "lines_size": "{:.0f}".format((sum(x) / len(x)))
+        },
+    )
 
 
 @app.get("/file/{id}", response_class=HTMLResponse)
@@ -56,7 +73,7 @@ async def read_item(request: Request, id: str):
                 if path.exists():
                     file_summary[file] = "danger"
                 else:
-                    file_summary[file] = "secondary"
+                    file_summary[file] = "base-100"
                 break
         if len(outputs):
             if all(x == outputs[0] for x in outputs):
@@ -65,7 +82,9 @@ async def read_item(request: Request, id: str):
                 file_summary[file] = "warning"
 
     with open(Path(directory) / id / f"{id}.rs", "r") as file:
-        file_content = highlight(file.read(), RustLexer(), HtmlFormatter(noclasses=True, cssclass="source"))
+        file_content = highlight(
+            file.read(), RustLexer(), HtmlFormatter(noclasses=True, cssclass="source", linenos="inline", style='material')
+        )
 
     with open(Path(directory) / id / f"{id}.json", "r") as file:
         json_ast = file.read()
@@ -105,8 +124,9 @@ async def read_item(request: Request, id: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('directory', type=str, nargs="?", help='directory of rust files', default="outRust")
+    parser = argparse.ArgumentParser(description="Process some integers.")
+    parser.add_argument("directory", type=str, nargs="?", help="directory of rust files",
+                        default="/Users/mayank/Documents/RustSmith/outRust")
     args = parser.parse_args()
     global directory
     directory = args.directory

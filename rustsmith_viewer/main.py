@@ -19,7 +19,7 @@ app = FastAPI()
 
 templates = Jinja2Templates(directory=pkg_resources.resource_filename("rustsmith_viewer", "templates/"))
 
-mapping = {"info": "All correct", "base-100": "No results", "error": "Compilation Error", "warning": "Bug found!!"}
+mapping = {"primary": "All correct", "base-100": "No results", "error": "Compilation Error", "warning": "Bug found!!"}
 
 app.mount(
     "/static", StaticFiles(directory=pkg_resources.resource_filename("rustsmith_viewer", "static/")), name="static"
@@ -77,7 +77,7 @@ async def read_item(request: Request, id: str):
                 break
         if len(outputs):
             if all(x == outputs[0] for x in outputs):
-                file_summary[file] = "info"
+                file_summary[file] = "primary"
             else:
                 file_summary[file] = "warning"
 
@@ -130,7 +130,7 @@ def main():
         type=str,
         nargs="?",
         help="directory of rust files",
-        default="outRust",
+        default="/Users/mayank/Documents/RustSmith/outRust",
     )
     args = parser.parse_args()
     global directory

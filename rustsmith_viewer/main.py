@@ -19,7 +19,7 @@ app = FastAPI()
 
 templates = Jinja2Templates(directory=pkg_resources.resource_filename("rustsmith_viewer", "templates/"))
 
-mapping = {"primary": "All correct", "base-100": "No results", "error": "Compilation Error", "warning": "Bug found!!"}
+mapping = {"primary": "All correct", "secondary": "No results", "danger": "Compilation Error", "warning": "Bug found!!"}
 
 app.mount(
     "/static", StaticFiles(directory=pkg_resources.resource_filename("rustsmith_viewer", "static/")), name="static"
@@ -71,9 +71,9 @@ async def read_item(request: Request, id: str):
             else:
                 path = Path(directory, file, f"O{flag}", "compile.log")
                 if path.exists():
-                    file_summary[file] = "error"
+                    file_summary[file] = "danger"
                 else:
-                    file_summary[file] = "base-100"
+                    file_summary[file] = "secondary"
                 break
         if len(outputs):
             if all(x == outputs[0] for x in outputs):

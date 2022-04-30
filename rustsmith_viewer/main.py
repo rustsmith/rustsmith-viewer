@@ -124,14 +124,8 @@ async def read_item(request: Request, id: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Process some integers.")
-    parser.add_argument(
-        "directory",
-        type=str,
-        nargs="?",
-        help="directory of rust files",
-        default="/Users/mayank/Documents/RustSmith/outRust",
-    )
+    parser = argparse.ArgumentParser(description="View RustSmith programs.")
+    parser.add_argument("directory", type=str, nargs="?", help="directory of rust files", default="outRust")
     args = parser.parse_args()
     global directory
     directory = args.directory

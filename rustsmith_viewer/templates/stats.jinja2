@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light"
+      style="background-image: radial-gradient(hsla(var(--bc)/.2) 0.5px,hsla(var(--b2)/1) 0.5px); background-size: 5px 5px;">
+<head>
+    <meta charset="UTF-8">
+    <title>RustSmith - {{ id }}</title>
+    <script src="https://cdn.plot.ly/plotly-2.11.1.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.14.3/dist/full.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+          integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<a style="margin: 20px 20px -50px;" class="btn btn-ghost text-md float-left" href="/"><i
+        class="fa-solid fa-chevron-left" style="margin-right: 5px;"></i> Back</a>
+<div style="margin: 20px 20px -50px;" class="btn btn-ghost text-md float-right">
+    <label class="swap swap-rotate">
+
+        <!-- this hidden checkbox controls the state -->
+        <input data-toggle-theme="dark,light" type="checkbox"/>
+
+        <!-- sun icon -->
+        <i class="swap-off fa-solid fa-moon"></i>
+        <i class="swap-on fa-solid fa-sun"></i>
+
+    </label>
+</div>
+<div class="hero">
+    <div class="hero-content text-center">
+        <div class="max-w-xl" style="margin-top: 20px">
+            <h1 class="text-5xl font-bold">RustSmith Statistics</h1>
+            <p class="py-6">A collection of graphs and stats for the generated files</p>
+        </div>
+    </div>
+</div>
+<div class="container mx-auto">
+    <div class="grid grid-cols-7">
+        <div class="xl:col-start-3 xl:col-span-3 lg:col-start-2 lg:col-span-5 stats shadow">
+            <div class="stat">
+                <div class="stat-figure text-primary">
+                    <i class="fa-solid fa-2x fa-file"></i>
+                </div>
+                <div class="stat-title">Number of Files</div>
+                <div class="stat-value">{{ line_length_plot|length }}</div>
+                <div class="stat-desc">Total Generated Files</div>
+            </div>
+            <div class="stat">
+                <div class="stat-figure text-primary">
+                    <i class="fa-solid fa-2x fa-database"></i>
+                </div>
+                <div class="stat-title">Avg. File Size</div>
+                <div class="stat-value">{{ average_size }} KB</div>
+                <div class="stat-desc">Across {{ line_length_plot|length }} files</div>
+            </div>
+            <div class="stat">
+                <div class="stat-figure text-primary">
+                    <i class="fa-solid fa-2x fa-file-lines"></i>
+                </div>
+                <div class="stat-title">Avg. Line Numbers</div>
+                <div class="stat-value">{{ lines_size }}</div>
+                <div class="stat-desc">Across {{ line_length_plot|length }} files</div>
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-7 gap-4" style="margin-top: 30px">
+        <div class="xl:col-start-3 xl:col-span-3 lg:col-start-2 lg:col-span-5">
+            <div class="card w-full bg-base-100 shadow-xl">
+                <div id="line_img_graph"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function hslToHex(totalstring) {
+        [h, s, l] = totalstring.replaceAll("%", "").split(" ")
+        l /= 100;
+        const a = s * Math.min(l, 1 - l) / 100;
+        const f = n => {
+            const k = (n + h / 30) % 12;
+            const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+            return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+        };
+        return `#${f(0)}${f(8)}${f(4)}`;
+    }
+
+    const rootProperties = getComputedStyle(document.documentElement)
+    const data = [{
+        x: {{ line_length_plot }},
+        type: 'histogram',
+        marker: {
+            color: hslToHex(rootProperties.getPropertyValue("--p"))
+        }
+    }];
+    const layout = {
+        title: "<span style='font-weight: 500'>Histogram of number of lines in Program</span>",
+        font: {
+            size: 14,
+            color: hslToHex(rootProperties.getPropertyValue("--bc")),
+            family: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"'
+        },
+        paper_bgcolor: "rgba(0,0,0,0.0)",
+        plot_bgcolor: "rgba(0,0,0,0.0)"
+    }
+    Plotly.newPlot('line_img_graph', data, layout, {displayModeBar: false});
+</script>
+</body>
+</html>

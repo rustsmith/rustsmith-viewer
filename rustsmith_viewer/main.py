@@ -19,7 +19,7 @@ app = FastAPI()
 
 templates = Jinja2Templates(directory=pkg_resources.resource_filename("rustsmith_viewer", "templates/"))
 
-mapping = {"primary": "All correct", "base-100": "No results", "danger": "Compilation Error", "warning": "Bug found!!"}
+mapping = {"info": "All correct", "base-100": "No results", "error": "Compilation Error", "warning": "Bug found!!"}
 
 app.mount(
     "/static", StaticFiles(directory=pkg_resources.resource_filename("rustsmith_viewer", "static/")), name="static"
@@ -49,7 +49,7 @@ async def stats(request: Request):
             "request": request,
             "line_length_plot": x,
             "average_size": "{:.1f}".format((sum(sizes) / len(sizes)) / 1024),
-            "lines_size": "{:.0f}".format((sum(x) / len(x)))
+            "lines_size": "{:.0f}".format((sum(x) / len(x))),
         },
     )
 
@@ -71,19 +71,19 @@ async def read_item(request: Request, id: str):
             else:
                 path = Path(directory, file, f"O{flag}", "compile.log")
                 if path.exists():
-                    file_summary[file] = "danger"
+                    file_summary[file] = "error"
                 else:
                     file_summary[file] = "base-100"
                 break
         if len(outputs):
             if all(x == outputs[0] for x in outputs):
-                file_summary[file] = "primary"
+                file_summary[file] = "info"
             else:
                 file_summary[file] = "warning"
 
     with open(Path(directory) / id / f"{id}.rs", "r") as file:
         file_content = highlight(
-            file.read(), RustLexer(), HtmlFormatter(noclasses=True, cssclass="source", linenos="inline", style='material')
+            file.read(), RustLexer(), HtmlFormatter(noclasses=True, cssclass="source", linenos="inline")
         )
 
     with open(Path(directory) / id / f"{id}.json", "r") as file:
@@ -125,8 +125,13 @@ async def read_item(request: Request, id: str):
 
 def main():
     parser = argparse.ArgumentParser(description="Process some integers.")
-    parser.add_argument("directory", type=str, nargs="?", help="directory of rust files",
-                        default="/Users/mayank/Documents/RustSmith/outRust")
+    parser.add_argument(
+        "directory",
+        type=str,
+        nargs="?",
+        help="directory of rust files",
+        default="outRust",
+    )
     args = parser.parse_args()
     global directory
     directory = args.directory

@@ -10,9 +10,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
           integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+<a style="margin: 20px 20px -50px;" class="btn btn-ghost text-md float-left" href="/"><i
+        class="fa-solid fa-chevron-left" style="margin-right: 5px;"></i> Back</a>
+<div style="margin: 20px 20px -50px;" class="btn btn-ghost text-md float-right">
+    <label class="swap swap-rotate">
+
+        <!-- this hidden checkbox controls the state -->
+        <input data-toggle-theme="dark,light" type="checkbox"/>
+
+        <!-- sun icon -->
+        <i class="swap-off fa-solid fa-moon"></i>
+        <i class="swap-on fa-solid fa-sun"></i>
+
+    </label>
+</div>
 <div class="hero">
     <div class="hero-content text-center">
         <div class="max-w-xl" style="margin-top: 20px">

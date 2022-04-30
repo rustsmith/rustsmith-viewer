@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light"
-      style="background-image: radial-gradient(hsla(var(--bc)/.2) 0.5px,hsla(var(--b2)/1) 0.5px); background-size: 5px 5px;">
+>
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/static/full.min.css"/>
@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
           integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
     <title>RustSmith - {{ id }}</title>
 </head>
 <body>
@@ -29,17 +30,40 @@
         overflow-y: hidden;
     }
 </style>
-<div class="hero">
-    <div class="hero-content text-center">
-        <div class="max-w-xl" style="margin-top: 20px">
-            <h1 class="text-5xl font-bold">RustSmith Viewer</h1>
-            <p class="py-2">Web Interface to view files and results from generated rust files</p>
-        </div>
+{#<div class="hero">#}
+{#    <div class="hero-content text-center">#}
+{#        <div class="max-w-xl" style="margin-top: 20px">#}
+{#            <h1 class="text-5xl font-bold">RustSmith Viewer</h1>#}
+{#            <p class="py-2">Web Interface to view files and results from generated rust files</p>#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+<div class="navbar" style=" border-bottom: 1px solid hsl(var(--b2))">
+    <div class="flex-1">
+        <a class="btn btn-ghost normal-case text-2xl">RustSmith Viewer</a>
+    </div>
+    <div class="flex-none">
+        <ul class="menu menu-horizontal p-0">
+            <li><a class="btn btn-ghost text-md" href="/stats"><i class="fa-solid fa-chart-column"></i> Statistics</a>
+            </li>
+            <li>
+                <label class="swap swap-rotate">
+
+                    <!-- this hidden checkbox controls the state -->
+                    <input data-toggle-theme="dark,light"  type="checkbox"/>
+
+                    <!-- sun icon -->
+                    <i class="swap-off fa-solid fa-moon"></i>
+                    <i class="swap-on fa-solid fa-sun"></i>
+
+                </label>
+            </li>
+        </ul>
     </div>
 </div>
 <div class="pr-5">
-    <div class="grid grid-cols-12">
-        <div class="col-span-2">
+    <div class="grid grid-cols-12 gap-5">
+        <div class="col-span-2" style=" border-right: 1px solid hsl(var(--b2)); padding-top: 10px">
             <ul class="menu rounded-box w-100 list-group p-2 py-0">
                 {% for item in files %}
                     <li style="margin-bottom: 5px">
@@ -57,94 +81,58 @@
         <div class="col-span-10">
             <div class="grid grid-cols-12 gap-5">
                 <div class="col-span-8">
-                    <div class="flex w-full" style="margin-bottom: 20px">
-                        <button class="btn btn-primary btn-wide flex-grow">Source File</button>
+                    <div class="flex w-full" style="margin-bottom: 20px; margin-top: 10px">
+                        <button id="sourceCodeButton" onclick="showCode()" class="btn btn-primary btn-wide flex-grow">
+                            Source File
+                        </button>
                         <div class="divider divider-horizontal"></div>
-                        <button class="btn btn-primary btn-wide btn-outline flex-grow" style="border: 0">Compile Log</button>
+                        <button id="compileLogButton" onclick="showCompile()" class="btn btn-wide btn-ghost flex-grow"
+                                style="border: 0">Compile Log
+                        </button>
                     </div>
-                    <div style="height: calc(100vh - 200px); overflow: scroll;">
+                    <div id="sourceCode" style="height: calc(100vh - 150px); overflow-x:hidden; overflow-y: scroll;">
                         {{ content|safe }}
+                    </div>
+                    <div id="compileLog" style="height: calc(100vh - 150px); overflow: scroll;">
+                        {{ compile_log|safe }}
                     </div>
                 </div>
                 <div class="col-span-4">
                     <div class="flex w-full" style="margin-bottom: 20px">
-                        <button class="btn btn-link btn-wide flex-grow" style="cursor: default; text-decoration: none">Output Log</button>
+                        <button class="btn btn-link btn-wide flex-grow" style="cursor: default; text-decoration: none">
+                            Output Log
+                        </button>
                     </div>
                     <div>
-                        <div style="height: calc(100vh - 200px); overflow: scroll;">
+                        <div style="height: calc(100vh - 150px); overflow: scroll;">
                             {{ output_log|safe }}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {#            <div class="row">#}
-        {#                <div style="height: 70px; border-bottom: 1px solid rgb(223,223,223)">#}
-        {#                    <a href="/stats" class="btn btn-primary" style="margin-top: 15px; float: right; margin-right: 20px">#}
-        {#                        View Statistics#}
-        {#                    </a>#}
-        {#                </div>#}
-        {#                <div class="row" style="padding-left: 20px; padding-top: 20px">#}
-        {#                    <div class="col-6">#}
-        {#                        <h2 style="width: 50%">{{ id }}.rs </h2>#}
-        {#                    </div>#}
-        {#                    <div class="col-2">#}
-        {#                        <span style="float: right; margin-top: 10px"#}
-        {#                              class="badge rounded-pill bg-{{ summary[id] }}">{{ mapping[summary[id]] }}</span>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#            </div>#}
-        {#            <div class="grid grid-cols-12" style="padding: 20px">#}
-        {#                <div class="columns-8">#}
-        {#                    <div class="grid grid-cols-12">#}
-        {#                        <div class="tabs tabs-boxed">#}
-        {#                            <a class="tab tab-active" id="home-tab" data-bs-toggle="tab"#}
-        {#                               data-bs-target="#home"#}
-        {#                               type="button" role="tab" aria-controls="home" aria-selected="true">Source#}
-        {#                                File#}
-        {#                            </a>#}
-        {#                            <a class="tab" role="presentation">#}
-        {#                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab"#}
-        {#                                        data-bs-target="#contact"#}
-        {#                                        type="button" role="tab" aria-controls="contact" aria-selected="false">#}
-        {#                                    Compile Log#}
-        {#                                </button>#}
-        {#                            </a>#}
-        {#                        </div>#}
-        {#                        <div class="tab-content" id="myTabContent">#}
-        {#                            <div class="tab-pane show active" id="home" role="tabpanel" aria-labelledby="home-tab">#}
-        {#                                <div style="height: calc(100vh - 250px); overflow: scroll;">#}
-        {#                                    {{ content|safe }}#}
-        {#                                </div>#}
-        {#                            </div>#}
-        {#                            <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">#}
-        {#                                <div id="ast-container" style="margin-top: 20px">#}
-        {#                                </div>#}
-        {#                            </div>#}
-        {#                            <div class="tab-pane" id="contact" role="tabpanel" aria-labelledby="contact-tab">#}
-        {#                                <div style="height: calc(100vh - 250px); overflow: scroll;">#}
-        {#                                    {{ compile_log|safe }}#}
-        {#                                </div>#}
-        {#                            </div>#}
-        {#                        </div>#}
-        {##}
-        {#                    </div>#}
-        {#                </div>#}
-        {#                <div class="columns-4">#}
-        {#                    <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">#}
-        {#                        <li class="nav-item" role="presentation">#}
-        {#                            <div class="nav-link">Output</div>#}
-        {#                        </li>#}
-        {#                    </ul>#}
-        {#                    <div>#}
-        {#                        <div style="height: calc(100vh - 250px); overflow: scroll;">#}
-        {#                            {{ output_log|safe }}#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#            </div>#}
-        {#        </div>#}
     </div>
 </div>
+<script>
+    function showCode() {
+        document.getElementById("sourceCode").style.display = "block"
+        document.getElementById("compileLog").style.display = "none"
+
+        document.getElementById("compileLogButton").classList.remove("btn-primary")
+        document.getElementById("compileLogButton").classList.add("btn-ghost")
+        document.getElementById("sourceCodeButton").classList.add("btn-primary")
+        document.getElementById("sourceCodeButton").classList.remove("btn-ghost")
+    }
+
+    function showCompile() {
+        document.getElementById("sourceCode").style.display = "none"
+        document.getElementById("compileLog").style.display = "block"
+
+        document.getElementById("sourceCodeButton").classList.remove("btn-primary")
+        document.getElementById("sourceCodeButton").classList.add("btn-ghost")
+        document.getElementById("compileLogButton").classList.add("btn-primary")
+        document.getElementById("compileLogButton").classList.remove("btn-ghost")
+    }
+</script>
 </body>
 </html>

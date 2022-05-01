@@ -20,6 +20,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory=pkg_resources.resource_filename("rustsmith_viewer", "templates/"))
 
 mapping = {"primary": "All correct", "secondary": "No results", "danger": "Compilation Error", "warning": "Bug found!!"}
+optimization_flags = ["0", "1", "2", "3", "s", "z"]
 
 app.mount(
     "/static", StaticFiles(directory=pkg_resources.resource_filename("rustsmith_viewer", "static/")), name="static"
@@ -30,7 +31,7 @@ directory = ""
 
 @app.get("/")
 async def root():
-    files: List[str] = os.listdir(directory)
+    files: List[str] = [dI for dI in os.listdir(directory) if os.path.isdir(os.path.join(directory, dI))]
     files.sort(key=lambda x: int(x.split("file")[1]))
     if len(files):
         return RedirectResponse(f"/file/{files[0]}")
@@ -40,14 +41,22 @@ async def root():
 
 @app.get("/stats")
 async def stats(request: Request):
-    files: List[str] = os.listdir(directory)
+    files: List[str] = [dI for dI in os.listdir(directory) if os.path.isdir(os.path.join(directory, dI))]
     x = list(map(lambda y: sum(1 for line in open(Path(directory) / y / f"{y}.rs")), files))
     sizes = list(map(lambda x: os.path.getsize(Path(directory) / x / f"{x}.rs"), files))
+
+    timings = []
+    if (Path(directory) / "time.log").exists():
+        with open(Path(directory) / "time.log", "r") as time_file:
+            timings = [float(x) for x in time_file.readlines()]
+
     return templates.TemplateResponse(
         "stats.jinja2",
         {
             "request": request,
             "line_length_plot": x,
+            "timings_plot": timings,
+            "avg_exec_time": "{:.1f}".format((sum(timings) / (len(timings) + 1e-10))),
             "average_size": "{:.1f}".format((sum(sizes) / len(sizes)) / 1024),
             "lines_size": "{:.0f}".format((sum(x) / len(x))),
         },
@@ -56,9 +65,8 @@ async def stats(request: Request):
 
 @app.get("/file/{id}", response_class=HTMLResponse)
 async def read_item(request: Request, id: str):
-    files: List[str] = os.listdir(directory)
+    files: List[str] = [dI for dI in os.listdir(directory) if os.path.isdir(os.path.join(directory, dI))]
     files.sort(key=lambda x: int(x.split("file")[1]))
-    optimization_flags = ["0", "1", "2", "3", "s", "z"]
     file_summary: Dict[str, str] = {}
     for file in files:
         file_summary[file] = "secondary"
@@ -125,10 +133,12 @@ async def read_item(request: Request, id: str):
 
 def main():
     parser = argparse.ArgumentParser(description="View RustSmith programs.")
-    parser.add_argument("directory", type=str, nargs="?", help="directory of rust files", default="outRust")
+    parser.add_argument("directory", type=str, nargs="?", help="directory of rust files",
+                        default="outRust")
     args = parser.parse_args()
     global directory
     directory = args.directory
+    print(directory)
     uvicorn.run(app)
 
 

@@ -94,8 +94,8 @@ async def read_item(request: Request, id: str):
             file.read(), RustLexer(), HtmlFormatter(noclasses=True, cssclass="source", linenos="inline")
         )
 
-    with open(Path(directory) / id / f"{id}.json", "r") as file:
-        json_ast = file.read()
+    with open(Path(directory) / id / f"{id}.txt", "r") as file:
+        inputs_content = file.read()
 
     compile_log_content = "No Compile Log file found"
 
@@ -125,7 +125,7 @@ async def read_item(request: Request, id: str):
             ),
             "content": file_content,
             "summary": file_summary,
-            "json_ast": json_ast,
+            "inputs_content":highlight('\n'.join(inputs_content.split(" ")), BashLexer(), HtmlFormatter(noclasses=True, cssclass="source")),
             "output_log": highlight(output_log_content, BashLexer(), HtmlFormatter(noclasses=True, cssclass="source")),
         },
     )
@@ -138,7 +138,6 @@ def main():
     args = parser.parse_args()
     global directory
     directory = args.directory
-    print(directory)
     uvicorn.run(app)
 
 

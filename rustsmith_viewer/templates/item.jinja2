@@ -59,8 +59,7 @@
                                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
                                         data-bs-target="#profile"
                                         type="button" role="tab" aria-controls="profile" aria-selected="false">
-                                    Abstract
-                                    Syntax Tree
+                                    Input Arguments
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
@@ -78,8 +77,7 @@
                                 </div>
                             </div>
                             <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                <div id="ast-container" style="margin-top: 20px">
-                                </div>
+                                {{ inputs_content|safe }}
                             </div>
                             <div class="tab-pane" id="contact" role="tabpanel" aria-labelledby="contact-tab">
                                 <div style="height: calc(100vh - 250px); overflow: scroll;">

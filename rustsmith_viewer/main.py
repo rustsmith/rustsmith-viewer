@@ -5,6 +5,7 @@ from typing import Dict, List
 
 import pkg_resources
 import uvicorn
+import pandas as pd
 from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates
 from pygments import highlight
@@ -45,6 +46,16 @@ async def stats(request: Request):
     x = list(map(lambda y: sum(1 for line in open(Path(directory) / y / f"{y}.rs")), files))
     sizes = list(map(lambda x: os.path.getsize(Path(directory) / x / f"{x}.rs"), files))
 
+    overall_df = None
+    for file in files:
+        df = pd.read_json(Path(directory, file, f"{file}.json"), orient='index').transpose()
+        if overall_df is None:
+            overall_df = df
+        else:
+            overall_df = pd.concat([overall_df, df])
+
+    overall_df_describe = overall_df.describe().transpose().sort_index().drop("count", axis=1)
+
     timings = []
     if (Path(directory) / "time.log").exists():
         with open(Path(directory) / "time.log", "r") as time_file:
@@ -59,6 +70,7 @@ async def stats(request: Request):
             "avg_exec_time": "{:.1f}".format((sum(timings) / (len(timings) + 1e-10))),
             "average_size": "{:.1f}".format((sum(sizes) / len(sizes)) / 1024),
             "lines_size": "{:.0f}".format((sum(x) / len(x))),
+            "stats_table": overall_df_describe.to_html(classes="table w-full")
         },
     )
 
@@ -125,7 +137,8 @@ async def read_item(request: Request, id: str):
             ),
             "content": file_content,
             "summary": file_summary,
-            "inputs_content":highlight('\n'.join(inputs_content.split(" ")), BashLexer(), HtmlFormatter(noclasses=True, cssclass="source")),
+            "inputs_content": highlight('\n'.join(inputs_content.split(" ")), BashLexer(),
+                                        HtmlFormatter(noclasses=True, cssclass="source")),
             "output_log": highlight(output_log_content, BashLexer(), HtmlFormatter(noclasses=True, cssclass="source")),
         },
     )

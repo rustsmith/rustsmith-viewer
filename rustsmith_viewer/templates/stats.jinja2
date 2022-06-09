@@ -86,7 +86,18 @@
                 <div id="timing_img_graph"></div>
             </div>
         </div>
-
+    </div>
+    <div class="grid grid-cols-8 gap-4" style="margin-top: 30px; margin-bottom: 30px">
+        <div class="xl:col-start-2 xl:col-span-6">
+            <div class="card w-full bg-base-100 shadow-xl">
+                <div class="card-body" style="margin: 0 auto">
+                        <h2 class="card-title" style="text-align: center">Statistics for each AST Node</h2>
+                </div>
+                {{ stats_table|safe }}
+            </div>
+        </div>
+        {#        <div class="overflow-x-auto">#}
+        {#        </div>#}
     </div>
 </div>
 

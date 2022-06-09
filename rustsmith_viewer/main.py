@@ -48,7 +48,7 @@ async def stats(request: Request):
 
     overall_df = None
     for file in files:
-        df = pd.read_json(Path(directory, file, f"{file}.json"), orient='index').transpose()
+        df = pd.read_json(Path(directory, file, f"{file}.json"), orient="index").transpose()
         if overall_df is None:
             overall_df = df
         else:
@@ -70,7 +70,7 @@ async def stats(request: Request):
             "avg_exec_time": "{:.1f}".format((sum(timings) / (len(timings) + 1e-10))),
             "average_size": "{:.1f}".format((sum(sizes) / len(sizes)) / 1024),
             "lines_size": "{:.0f}".format((sum(x) / len(x))),
-            "stats_table": overall_df_describe.to_html(classes="table w-full")
+            "stats_table": overall_df_describe.to_html(classes="table w-full"),
         },
     )
 
@@ -137,8 +137,9 @@ async def read_item(request: Request, id: str):
             ),
             "content": file_content,
             "summary": file_summary,
-            "inputs_content": highlight('\n'.join(inputs_content.split(" ")), BashLexer(),
-                                        HtmlFormatter(noclasses=True, cssclass="source")),
+            "inputs_content": highlight(
+                "\n".join(inputs_content.split(" ")), BashLexer(), HtmlFormatter(noclasses=True, cssclass="source")
+            ),
             "output_log": highlight(output_log_content, BashLexer(), HtmlFormatter(noclasses=True, cssclass="source")),
         },
     )
@@ -146,8 +147,7 @@ async def read_item(request: Request, id: str):
 
 def main():
     parser = argparse.ArgumentParser(description="View RustSmith programs.")
-    parser.add_argument("directory", type=str, nargs="?", help="directory of rust files",
-                        default="outRust")
+    parser.add_argument("directory", type=str, nargs="?", help="directory of rust files", default="outRust")
     args = parser.parse_args()
     global directory
     directory = args.directory
